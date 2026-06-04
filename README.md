@@ -18,5 +18,3 @@ A modern **dynamic form builder** built with **Next.js + TypeScript**, designed 
 ---
 
 ## 🖼️ Preview
-
-> Add screenshots here later
