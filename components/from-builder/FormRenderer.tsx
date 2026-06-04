@@ -6,10 +6,9 @@ import FormFieldComponent from "./FormField";
 
 type Props = {
   schema: FormSchema;
-  onSubmit?: (data: FormData) => void;
 };
 
-export default function FormRenderer({ schema, onSubmit }: Props) {
+export default function FormRenderer({ schema }: Props) {
   const [formData, setFormData] = useState<FormData>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -48,7 +47,6 @@ export default function FormRenderer({ schema, onSubmit }: Props) {
 
     if (!validate()) return;
 
-    onSubmit?.(formData);
     console.log("Form Submitted:", formData);
   };
 
