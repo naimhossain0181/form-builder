@@ -5,6 +5,7 @@ export type FieldValue =
   | string[]
   | null
   | undefined;
+
 export type FormFieldType =
   | "text"
   | "email"
@@ -15,8 +16,33 @@ export type FormFieldType =
   | "checkbox"
   | "radio";
 
-export type FormField = {
+export interface FormFieldOption {
+  label: string;
+  value: string | number;
+}
+
+export interface FormValidation {
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
+  customError?: string;
+}
+
+export interface ConditionalRule {
+  field: string;
+  equals: FieldValue;
+}
+
+export interface FormUI {
+  colSpan?: number;
+  hidden?: boolean;
+}
+
+export interface FormField {
   id: string;
+
   name: string;
 
   type: FormFieldType;
@@ -24,6 +50,7 @@ export type FormField = {
   label: string;
 
   placeholder?: string;
+
   required?: boolean;
 
   defaultValue?: FieldValue;
@@ -32,43 +59,25 @@ export type FormField = {
 
   helperText?: string;
 
-  // 🔥 SELECT / RADIO / CHECKBOX OPTIONS
-  options?: {
-    label: string;
-    value: string | number;
-  }[];
+  options?: FormFieldOption[];
 
-  // 🔥 VALIDATION SYSTEM
-  validation?: {
-    minLength?: number;
-    maxLength?: number;
-    min?: number;
-    max?: number;
-    pattern?: string;
-    customError?: string;
-  };
+  validation?: FormValidation;
 
-  // 🔥 CONDITIONAL LOGIC
   conditional?: {
-    showIf?: {
-      field: string;
-      equals: FieldValue;
-    };
+    showIf?: ConditionalRule;
   };
 
-  // 🔥 UI CONTROL
-  ui?: {
-    colSpan?: number;
-    hidden?: boolean;
-  };
-};
+  ui?: FormUI;
+}
 
-export type FormSchema = {
+export interface FormSchema {
   id?: string;
+
   title: string;
+
   description?: string;
 
   fields: FormField[];
-};
+}
 
 export type FormData = Record<string, FieldValue>;

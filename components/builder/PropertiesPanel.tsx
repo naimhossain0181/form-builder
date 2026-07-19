@@ -3,33 +3,55 @@
 import { useBuilderStore } from "@/store/builderStore";
 
 export default function PropertiesPanel() {
-  const { schema, selectedFieldId, updateField } = useBuilderStore();
+  const { schema, selectedNodeId, updateNode } = useBuilderStore();
 
-  const field = schema.fields.find((f) => f.id === selectedFieldId);
+  const node = selectedNodeId
+    ? schema.nodes[selectedNodeId]
+    : null;
 
-  if (!field) {
-    return <div className="w-80 p-4">No field selected</div>;
+  if (!node) {
+    return (
+      <aside className="border-l p-4">
+        <p className="text-sm text-gray-500">
+          No component selected
+        </p>
+      </aside>
+    );
   }
 
   return (
-    <div className="w-80 p-4 border-l">
-      <h3 className="font-bold mb-3">Properties</h3>
+    <aside className="border-l p-4">
+      <h2 className="mb-4 text-lg font-semibold">
+        Properties
+      </h2>
+
+      <label className="mb-1 block text-sm">
+        Label
+      </label>
 
       <input
-        className="border p-2 w-full mb-2"
-        value={field.label}
-        onChange={(e) => updateField(field.id, { label: e.target.value })}
+        className="mb-4 w-full rounded border p-2"
+        value={(node.props.label as string) ?? ""}
+        onChange={(e) =>
+          updateNode(node.id, {
+            label: e.target.value,
+          })
+        }
       />
 
+      <label className="mb-1 block text-sm">
+        Placeholder
+      </label>
+
       <input
-        className="border p-2 w-full"
-        value={field.placeholder || ""}
+        className="w-full rounded border p-2"
+        value={(node.props.placeholder as string) ?? ""}
         onChange={(e) =>
-          updateField(field.id, {
+          updateNode(node.id, {
             placeholder: e.target.value,
           })
         }
       />
-    </div>
+    </aside>
   );
 }

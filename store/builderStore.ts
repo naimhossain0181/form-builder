@@ -1,53 +1,105 @@
 import { create } from "zustand";
-import type { FormField, FormSchema } from "@/types/form";
+import {
+  BuilderNode,
+  BuilderNodeType,
+  BuilderSchema,
+} from "@/types/builder";
 
-type BuilderState = {
-  schema: FormSchema;
+type BuilderStore = {
+  schema: BuilderSchema;
 
-  selectedFieldId: string | null;
+  selectedNodeId: string | null;
 
-  addField: (field: FormField) => void;
-  updateField: (id: string, data: Partial<FormField>) => void;
-  removeField: (id: string) => void;
-  selectField: (id: string | null) => void;
-  setSchema: (schema: FormSchema) => void;
+  createNode: (type: BuilderNodeType) => BuilderNode;
+
+  insertNode: (
+    parentId: string | null,
+    node: BuilderNode,
+    index?: number,
+  ) => void;
+
+  updateNode: (
+    id: string,
+    props: Partial<BuilderNode["props"]>,
+  ) => void;
+
+  removeNode: (id: string) => void;
+
+  moveNode: (
+    nodeId: string,
+    newParentId: string | null,
+    index: number,
+  ) => void;
+
+  selectNode: (id: string | null) => void;
+
+  setSchema: (schema: BuilderSchema) => void;
 };
 
-export const useBuilderStore = create<BuilderState>((set) => ({
+export const useBuilderStore = create<BuilderStore>((set) => ({
   schema: {
-    title: "Untitled Form",
-    fields: [],
+    rootIds: [],
+    nodes: {},
   },
 
-  selectedFieldId: null,
+  selectedNodeId: null,
 
-  addField: (field) =>
-    set((state) => ({
-      schema: {
-        ...state.schema,
-        fields: [...state.schema.fields, field],
-      },
-    })),
+  createNode: (type) => ({
+    id: crypto.randomUUID(),
+    type,
+    parentId: null,
+    children: [],
+    props: {},
+  }),
 
-  updateField: (id, data) =>
-    set((state) => ({
-      schema: {
-        ...state.schema,
-        fields: state.schema.fields.map((f) =>
-          f.id === id ? { ...f, ...data } : f,
-        ),
-      },
-    })),
+  insertNode: (parentId, node) =>
+    set((state) => {
+      const schema = structuredClone(state.schema);
 
-  removeField: (id) =>
-    set((state) => ({
-      schema: {
-        ...state.schema,
-        fields: state.schema.fields.filter((f) => f.id !== id),
-      },
-    })),
+      schema.nodes[node.id] = node;
 
-  selectField: (id) => set({ selectedFieldId: id }),
+      if (parentId === null) {
+        schema.rootIds.push(node.id);
+      } else {
+        schema.nodes[parentId].children.push(node.id);
+        schema.nodes[node.id].parentId = parentId;
+      }
 
-  setSchema: (schema) => set({ schema }),
+      return { schema };
+    }),
+
+  updateNode: (id, props) =>
+    set((state) => {
+      const schema = structuredClone(state.schema);
+
+      schema.nodes[id].props = {
+        ...schema.nodes[id].props,
+        ...props,
+      };
+
+      return { schema };
+    }),
+
+  removeNode: (id) =>
+    set((state) => {
+      const schema = structuredClone(state.schema);
+
+      delete schema.nodes[id];
+
+      schema.rootIds = schema.rootIds.filter((x) => x !== id);
+
+      return { schema };
+    }),
+
+  moveNode: () => {
+    // TODO: dnd-kit implementation
+  },
+
+  selectNode: (id) => ({
+    selectedNodeId: id,
+  }),
+
+  setSchema: (schema) => ({
+    schema,
+  }),
 }));

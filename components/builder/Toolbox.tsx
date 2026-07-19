@@ -1,38 +1,26 @@
 "use client";
 
 import { useBuilderStore } from "@/store/builderStore";
-import { FormFieldType } from "@/types/form";
-
-const FIELD_TYPES = ["text", "email", "number", "textarea", "select"];
+import { TOOLBOX_ITEMS } from "../constants/toolbox";
 
 export default function Toolbox() {
-  const addField = useBuilderStore((s) => s.addField);
-
-  const handleAdd = (type: string) => {
-    const id = crypto.randomUUID(); // ✅ safe here (event handler)
-
-    addField({
-      id,
-      name: `${type}_${id.slice(0, 8)}`,
-      label: type.toUpperCase(),
-      type: type as FormFieldType,
-      required: false,
-    });
-  };
+  const createNode = useBuilderStore((s) => s.createNode);
 
   return (
-    <div className="p-3 border-r w-60">
-      <h3 className="font-bold mb-3">Fields</h3>
+    <aside className="border-r p-4">
+      <h2 className="mb-4 text-lg font-semibold">Toolbox</h2>
 
-      {FIELD_TYPES.map((type) => (
-        <button
-          key={type}
-          onClick={() => handleAdd(type)}
-          className="block w-full p-2 mb-2 border rounded"
-        >
-          {type}
-        </button>
-      ))}
-    </div>
+      <div className="space-y-2">
+        {TOOLBOX_ITEMS.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => createNode(item.type)}
+            className="flex w-full items-center rounded-lg border p-3 text-left hover:bg-gray-100"
+          >
+            <span>{item.title}</span>
+          </button>
+        ))}
+      </div>
+    </aside>
   );
 }

@@ -1,6 +1,5 @@
-import FormRenderer from "@/components/from/FormRenderer";
-import { exampleForm } from "@/lib/schema/exampleForm";
+import MainFormBuilderPageLayout from "@/components/MainFormBuilderPageLayout";
 
 export default function Page() {
-  return <FormRenderer schema={exampleForm} />;
+  return <MainFormBuilderPageLayout/>;
 }
